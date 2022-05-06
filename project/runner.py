@@ -1,5 +1,4 @@
-from project import app
-from project.views import *
+from views import *
 
 
 if __name__ == '__main__':

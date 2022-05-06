@@ -11,7 +11,8 @@ partronymics_m = ['Александрович', 'Алексеевич', 'Анатольевич', 'Андреевич', 'Ан
 partronymics_w = ['Александровна', 'Алексеевна', 'Анатольевна', 'Андреевна', 'Антоновна', 'Аркадьевна', 'Арсеньевна', 'Артемовна', 'Афанасьевна', 'Богданова', 'Борисовна', 'Вадимова', 'Валентиновна', 'Валериевна', 'Васильевна', 'Викторовна', 'Витальевна', 'Владимировна', 'Всеволодовна', 'Вячеславовна', 'Гаврилова', 'Геннадиевна', 'Георгиевна', 'Глебова', 'Григорьева', 'Давыдовна', 'Даниловна', 'Денисова', 'Дмитриевна', 'Евгеньевна', 'Егоровна', 'Емельяновна', 'Ефимова', 'Ивановна', 'Игоревна', 'Ильична', 'Иосифовна']
 
 
-def user_generator():
+
+def client_generator():
     out = {
         'gender': bool(randint(0, 1)),
         'date_birthday': f'{randint(1,28)}.{randint(1,12)}.{randint(1900, 2004)}',
@@ -33,88 +34,106 @@ def email_generator():
 def phone_generator():
     return '+7'+str(randint(1000000000, 9999999999))
 
-
-def user_put():
-    req = requests.put('http://127.0.0.1:5000/user/', data=user_generator())
-    print(req.text)
-
-
-def user_post(user_id=''):
-    req = requests.post('http://127.0.0.1:5000/user/', data={
-        'user_id': user_id
+cookies = None
+def login(username='admin', password='admin'):
+    global cookies
+    req = requests.post('http://127.0.0.1:5000/login/', data={
+        'username': username,
+        'password': password
     })
+    cookies = req.cookies
+    print(req.text)
+    return cookies
+
+def client_put():
+    req = requests.put('http://127.0.0.1:5000/clients/', data=client_generator(), cookies=cookies)
     print(req.text)
 
 
-def user_del(user_id):
-    req = requests.delete('http://127.0.0.1:5000/user/', data={
-        'user_id': user_id
-    })
+def client_post(client_id=''):
+    req = requests.post('http://127.0.0.1:5000/clients/', data={
+        'client_id': client_id
+    }, cookies=cookies)
     print(req.text)
 
-def user_upd(user_id):
-    req = requests.patch('http://127.0.0.1:5000/user/', data={'user_id': user_id, **user_generator()})
+def client_del(client_id):
+    req = requests.delete('http://127.0.0.1:5000/clients/', data={
+        'client_id': client_id
+    }, cookies=cookies)
+    print(req.text)
+
+def client_upd(client_id):
+    req = requests.patch('http://127.0.0.1:5000/clients/', data={'client_id': client_id, **client_generator()},
+                         cookies=cookies)
     print(req.text)
 
 
 
-def phone_put(user_id):
-    req = requests.put('http://127.0.0.1:5000/phone/', data={
-        'user_id': user_id,
+def phone_put(client_id):
+    req = requests.put('http://127.0.0.1:5000/phones/', data={
+        'client_id': client_id,
         'type': True,
         'number': phone_generator()
-    })
+    }, cookies=cookies)
     print(req.text)
 
-def phone_post(phone_id='', user_id=''):
-    req = requests.post('http://127.0.0.1:5000/phone/', data={
+def phone_post(phone_id='', client_id=''):
+    req = requests.post('http://127.0.0.1:5000/phones/', data={
         'phone_id': phone_id,
-        'user_id': user_id
-    })
+        'client_id': client_id
+    }, cookies=cookies)
     print(req.text)
 
 def phone_del(phone_id):
-    req = requests.delete('http://127.0.0.1:5000/phone/', data={
+    req = requests.delete('http://127.0.0.1:5000/phones/', data={
         'phone_id': phone_id
-    })
+    }, cookies=cookies)
     print(req.text)
 
 def phone_upd(phone_id):
-    req = requests.patch('http://127.0.0.1:5000/phone/', data={'phone_id': phone_id, **phone_generator()})
+    req = requests.patch('http://127.0.0.1:5000/phones/', data={'phone_id': phone_id, 'number': phone_generator()},
+                         cookies=cookies)
     print(req.text)
 
 
 
-def email_put(user_id):
-    req = requests.put('http://127.0.0.1:5000/email/', data={
-        'user_id': user_id,
+def email_put(client_id):
+    req = requests.put('http://127.0.0.1:5000/emails/', data={
+        'client_id': client_id,
         'type': bool(randint(0,1)),
         'email': email_generator()
-    })
+    }, cookies=cookies)
     print(req.text)
 
-def email_post(email_id='', user_id=''):
-    req = requests.post('http://127.0.0.1:5000/email/', data={
+def email_post(email_id='', client_id=''):
+    req = requests.post('http://127.0.0.1:5000/emails/', data={
         'email_id': email_id,
-        'user_id': user_id
-    })
+        'client_id': client_id
+    }, cookies=cookies)
     print(req.text)
 
 def email_del(email_id):
-    req = requests.delete('http://127.0.0.1:5000/email/', data={
+    req = requests.delete('http://127.0.0.1:5000/emails/', data={
         'email_id': email_id
-    })
+    }, cookies=cookies)
     print(req.text)
 
 def email_upd(email_id):
-    req = requests.patch('http://127.0.0.1:5000/email/', data={'email_id': email_id, **email_generator()})
+    req = requests.patch('http://127.0.0.1:5000/emails/', data={
+        'email_id': email_id,
+        'type': bool(randint(0,1)),
+        'email': email_generator()
+    }, cookies=cookies)
     print(req.text)
 
 
-def make_random_users(num=1000):
-    for i in range(num):
-        user_put()
-        phone_put(i+1)
-        email_put(i+1)
-    print(f'Created {num} users')
+def make_random_clients(num=100):
+    for i in range(1, num):
+        client_put()
+        phone_put(i)
+        email_put(i)
+    print(f'Created {num} clients')
 
+
+if __name__ == '__main__':
+    login()
