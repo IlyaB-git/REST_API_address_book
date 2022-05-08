@@ -11,5 +11,6 @@ app.config['SECRET_KEY'] = 'drgdgdfwhuirhsfow3uj39ojje'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user1:123@localhost/db_address_book'
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
+migrate = Migrate(app, db)
 
 
